@@ -6,3 +6,9 @@ I certainly don't. After being frustrated with having to find the remote for the
 Dependancies:
 flask
 pyserial
+
+
+
+## Hardware
+I designed the PCBs using CircuitMaker, leveraging the work that I already put into the temperature probe hat I developed previously.
+https://workspace.circuitmaker.com/Projects/Details/Devin-Cody/Raspberry-Pi-Zero-Hat-IR-beacon
