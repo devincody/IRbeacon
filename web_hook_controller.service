@@ -20,8 +20,7 @@ Environment=DISPLAY=:0
 EnvironmentFile=/home/pi/IFTTT.env
 Type=simple
 Restart=always
-User=pi
-ExecStart=/usr/bin/python3 -u /home/pi/Documents/rpi-clapper/web_hook_controller.py
+ExecStart=/usr/bin/python2 /home/pi/IRbeacon/web_hook_controller.py 2>&1 | tee /home/pi/ir.log
 
 [Install]
 WantedBy=multi-user.target
