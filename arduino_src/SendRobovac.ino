@@ -15,7 +15,7 @@
 IRsendRaw mySender;
 unsigned long previousMillis = 0;
 unsigned long currentMillis = 0;
-uint16_t local_sig[STANDARD_DATA_LEN]; //PROGMEM data needs to be moved locally or the data won't be sent on time
+uint16_t local_sig[HOME_DATA_LEN]; //PROGMEM data needs to be moved locally or the data won't be sent on time
 int ledState = LOW;
 char datac = '\0';
 int good_cmd = 1;
@@ -44,62 +44,58 @@ void loop() {
 
     // Send code based on which characters are received
     switch(datac){
-      case 's':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
-          // Read from flash memory
-          local_sig[i] = pgm_read_word(&standard_Data[i]);
-        }
-        break;
+      // Robovac
       case 'h':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < HOME_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&home_Data[i]);
         }
         break;
       case 'a':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < AUTO_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&auto_Data[i]);
         }
         break;
-      case 'k':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
-          local_sig[i] = pgm_read_word(&suck_pwr_Data[i]);
+      case 'x':
+        for (int i = 0; i < AUTO_MAX_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&auto_max_Data[i]);
         }
         break;
       case 'u':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < UP_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&up_Data[i]);
         }
         break;
       case 'l':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < LEFT_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&left_Data[i]);
         }
         break;
       case 'r':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < RIGHT_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&right_Data[i]);
         }
         break;
       case 'd':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < DOWN_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&down_Data[i]);
         }
         break;
       case 't':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
-          local_sig[i] = pgm_read_word(&start_stop_Data[i]);
+        for (int i = 0; i < STOP_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&stop_Data[i]);
         }
         break;
       case 'w':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < SPOT_SWIRL_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&spot_swirl_Data[i]);
         }
         break;
       case 'e':
-        for (int i = 0; i < STANDARD_DATA_LEN; i++){
+        for (int i = 0; i < EDGE_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&edge_Data[i]);
         }
         break;
+      // Oscillating Fan
       case 'f':
         for (int i = 0; i < ON_OFF_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&ON_OFF[i]);
@@ -120,6 +116,7 @@ void loop() {
           local_sig[i] = pgm_read_word(&TIMER[i]);
         }
         break;
+      // TV
       case 'o':
         for (int i = 0; i < TV_PWR_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_power_Data[i]);
@@ -140,13 +137,33 @@ void loop() {
           local_sig[i] = pgm_read_word(&tv_remote_mute_Data[i]);
         }
         break;
+      case 'y':
+        for (int i = 0; i < TV_PLAY_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&tv_remote_play_Data[i]);
+        }
+        break;
+      case 'n':
+        for (int i = 0; i < TV_PAUSE_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&tv_remote_pause_Data[i]);
+        }
+        break;
+      case 'c':
+        for (int i = 0; i < TV_FORWARD_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&tv_remote_forward_Data[i]);
+        }
+        break;
+      case 'b':
+        for (int i = 0; i < TV_BACKWARD_DATA_LEN; i++){
+          local_sig[i] = pgm_read_word(&tv_remote_backwards_Data[i]);
+        }
+        break;
       default:
         good_cmd = 0;
         break;
     }
     
     if (good_cmd == 1){
-      mySender.send(local_sig, STANDARD_DATA_LEN,36);
+      mySender.send(local_sig, HOME_DATA_LEN, 36);
       setLED(&ledState, &previousMillis, currentMillis);
       Serial.println(F("Sent signal."));
     }
