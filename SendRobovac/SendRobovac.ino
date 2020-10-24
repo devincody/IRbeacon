@@ -1,8 +1,7 @@
-/* rawSend.ino Example sketch for IRLib2
- *  Illustrates how to send a code Using raw timings which were captured
- *  from the "rawRecv.ino" sample sketch.  Load that sketch and
- *  capture the values. They will print in the serial monitor. Then you
- *  cut and paste that output into the appropriate section below.
+/* SendRobovac.ino
+ *  Author: Devin Cody 2020
+ *  Gets commands from a Raspberry Pi Zero over UART. Decodes the single char command and transmits the result
+ *  using IRLib.
  */
 #include <IRLibSendBase.h>    //We need the base code
 #include <IRLib_HashRaw.h>    //Only use raw sender
@@ -191,7 +190,8 @@ void loop() {
       int freq = 36;
       mySender.send(local_sig, local_sig_len, freq);
       setLED(&ledState, &previousMillis, currentMillis);
-      Serial.println(F("Sent signal."));
+      Serial.print(F("Sent signal: "));
+      Serial.println(datac);
     }
   }
   
