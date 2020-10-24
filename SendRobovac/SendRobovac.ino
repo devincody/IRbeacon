@@ -1,8 +1,7 @@
-/* rawSend.ino Example sketch for IRLib2
- *  Illustrates how to send a code Using raw timings which were captured
- *  from the "rawRecv.ino" sample sketch.  Load that sketch and
- *  capture the values. They will print in the serial monitor. Then you
- *  cut and paste that output into the appropriate section below.
+/* SendRobovac.ino
+ *  Author: Devin Cody 2020
+ *  Gets commands from a Raspberry Pi Zero over UART. Decodes the single char command and transmits the result
+ *  using IRLib.
  */
 #include <IRLibSendBase.h>    //We need the base code
 #include <IRLib_HashRaw.h>    //Only use raw sender
@@ -12,11 +11,14 @@
 #include "OscillatingFanIR.h"
 #include "TelevisionIR.h"
 
+#define MAXSIG 100
+
 IRsendRaw mySender;
 unsigned long previousMillis = 0;
 unsigned long currentMillis = 0;
-uint16_t local_sig[HOME_DATA_LEN]; //PROGMEM data needs to be moved locally or the data won't be sent on time
+uint16_t local_sig[MAXSIG]; //PROGMEM data needs to be moved locally or the data won't be sent on time
 int ledState = LOW;
+int local_sig_len = MAXSIG;
 char datac = '\0';
 int good_cmd = 1;
 
@@ -49,113 +51,135 @@ void loop() {
         for (int i = 0; i < HOME_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&home_Data[i]);
         }
+        local_sig_len = HOME_DATA_LEN;
         break;
       case 'a':
         for (int i = 0; i < AUTO_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&auto_Data[i]);
         }
+        local_sig_len = AUTO_DATA_LEN;
         break;
       case 'x':
         for (int i = 0; i < AUTO_MAX_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&auto_max_Data[i]);
         }
+        local_sig_len = AUTO_MAX_DATA_LEN;
         break;
       case 'u':
         for (int i = 0; i < UP_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&up_Data[i]);
         }
+        local_sig_len = UP_DATA_LEN;
         break;
       case 'l':
         for (int i = 0; i < LEFT_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&left_Data[i]);
         }
+        local_sig_len = LEFT_DATA_LEN;
         break;
       case 'r':
         for (int i = 0; i < RIGHT_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&right_Data[i]);
         }
+        local_sig_len = RIGHT_DATA_LEN;
         break;
       case 'd':
         for (int i = 0; i < DOWN_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&down_Data[i]);
         }
+        local_sig_len = DOWN_DATA_LEN;
         break;
       case 't':
         for (int i = 0; i < STOP_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&stop_Data[i]);
         }
+        local_sig_len = STOP_DATA_LEN;
         break;
       case 'w':
         for (int i = 0; i < SPOT_SWIRL_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&spot_swirl_Data[i]);
         }
+        local_sig_len = SPOT_SWIRL_DATA_LEN;
         break;
       case 'e':
         for (int i = 0; i < EDGE_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&edge_Data[i]);
         }
+        local_sig_len = EDGE_DATA_LEN;
         break;
       // Oscillating Fan
       case 'f':
         for (int i = 0; i < ON_OFF_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&ON_OFF[i]);
         }
+        local_sig_len = ON_OFF_RAW_DATA_LEN;
         break;
       case 'p':
         for (int i = 0; i < SPEED_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&SPEED[i]);
         }
+        local_sig_len = SPEED_RAW_DATA_LEN;
         break;
       case 'i':
         for (int i = 0; i < OSC_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&OSC[i]);
         }
+        local_sig_len = OSC_RAW_DATA_LEN;
         break;
       case 'm':
         for (int i = 0; i < TIMER_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&TIMER[i]);
         }
+        local_sig_len = TIMER_RAW_DATA_LEN;
         break;
       // TV
       case 'o':
         for (int i = 0; i < TV_PWR_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_power_Data[i]);
         }
+        local_sig_len = TV_PWR_DATA_LEN;
         break;
       case 'v':
         for (int i = 0; i < TV_VOL_UP_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_volume_up_Data[i]);
         }
+        local_sig_len = TV_VOL_UP_DATA_LEN;
         break;
       case 'z':
         for (int i = 0; i < TV_VOL_DWN_RAW_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_volume_down_DataData[i]);
         }
+        local_sig_len = TV_VOL_DWN_RAW_DATA_LEN;
         break;
       case 'q':
         for (int i = 0; i < TV_MUTE_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_mute_Data[i]);
         }
+        local_sig_len = TV_MUTE_DATA_LEN;
         break;
       case 'y':
         for (int i = 0; i < TV_PLAY_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_play_Data[i]);
         }
+        local_sig_len = TV_PLAY_DATA_LEN;
         break;
       case 'n':
         for (int i = 0; i < TV_PAUSE_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_pause_Data[i]);
         }
+        local_sig_len = TV_PAUSE_DATA_LEN;
         break;
       case 'c':
         for (int i = 0; i < TV_FORWARD_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_forward_Data[i]);
         }
+        local_sig_len = TV_FORWARD_DATA_LEN;
         break;
       case 'b':
         for (int i = 0; i < TV_BACKWARD_DATA_LEN; i++){
           local_sig[i] = pgm_read_word(&tv_remote_backwards_Data[i]);
         }
+        local_sig_len = TV_BACKWARD_DATA_LEN;
         break;
       default:
         good_cmd = 0;
@@ -163,9 +187,11 @@ void loop() {
     }
     
     if (good_cmd == 1){
-      mySender.send(local_sig, HOME_DATA_LEN, 36);
+      int freq = 36;
+      mySender.send(local_sig, local_sig_len, freq);
       setLED(&ledState, &previousMillis, currentMillis);
-      Serial.println(F("Sent signal."));
+      Serial.print(F("Sent signal: "));
+      Serial.println(datac);
     }
   }
   
